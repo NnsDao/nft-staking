@@ -1,0 +1,9 @@
+service : {
+
+  get_owner : () -> (opt principal) query;
+  get_id : () -> (nat32) query;
+
+  get_ic_cdk_caller : () -> (opt principal) query;
+
+  add_staking : () -> ();
+}
