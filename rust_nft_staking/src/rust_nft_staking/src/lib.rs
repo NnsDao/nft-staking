@@ -41,9 +41,9 @@ fn get_id() -> u32 {
 // #[update(guard = "is_owner")]
 #[update]
 #[candid::candid_method]
-fn add_staking() -> () {
+fn add_staking(id : String) -> () {
     STAKING_STATE.with(|staking_service| {
-        staking_service.borrow_mut().add_staking();
+        staking_service.borrow_mut().add_staking(id.clone());
     })
 }
 

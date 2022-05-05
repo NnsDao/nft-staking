@@ -5,5 +5,5 @@ service : {
 
   get_ic_cdk_caller : () -> (opt principal) query;
 
-  add_staking : () -> ();
+  add_staking : (text) -> ();
 }
