@@ -58,3 +58,16 @@ fn get_ic_cdk_caller() -> Option<Principal>
 // #[import(canister_id = "？", candid_path = "？.did")]
 // struct NFTCanister;
 
+/// Print all staking info
+#[query]
+#[candid::candid_method(query)]
+pub fn print_nft_staking_list() -> Vec<staking::StakingListItem> {
+    STAKING_STATE.with(|staking_service| 
+        staking_service.borrow().print_nft_staking_list())
+}
+#[query]
+#[candid::candid_method(query)]
+pub fn print_nft_staking_pools() -> Vec<staking::StakingPoolItem> {
+    STAKING_STATE.with(|staking_service| 
+        staking_service.borrow().print_nft_staking_pools())
+}

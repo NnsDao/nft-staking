@@ -9,6 +9,16 @@ use std::vec::Vec;
 
 use crate::init;
 
+static E : f64 = 2.718281828459;
+
+// #[derive(Clone, Debug, Default, CandidType, Deserialize)]
+// pub enum StakingTime {
+//     #[default] month,    // 1.3
+//     #[default] quarter,  // 1.9
+//     #[default] half,     // 3.25
+//     #[default] year,     // 6.475
+// }
+
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
 pub struct Nft {
 
@@ -26,6 +36,7 @@ pub struct Nft {
     pub start_time: u64,
     pub end_time: u64,
     pub earned_profit: u64,
+    pub staking_level: f32,
 }
 
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
@@ -61,6 +72,18 @@ impl StakingPool
     }
 }
 
+// item for print debug
+#[derive(Clone, Debug, Default, CandidType, Deserialize)]
+pub struct StakingListItem {
+    pub id: u32,
+    pub addr: String,
+}
+#[derive(Clone, Debug, Default, CandidType, Deserialize)]
+pub struct StakingPoolItem {
+    pub id: u32,
+    pub pool: StakingPool,
+}
+
 #[derive(CandidType, Clone, Deserialize, Default)]
 pub struct StakingService {
     pub owner: Option<Principal>,
@@ -92,20 +115,40 @@ impl StakingService {
          Ok(())
     }
 
-    // temp functions
+    // print functions for debug
     pub fn get_id(& self) -> (u32)
     {
         self.id
     }
+    pub fn print_nft_staking_list(&self) -> Vec<StakingListItem> {
+        self.nft_staking_list
+            .clone()
+            .into_iter()
+            .map(|(id, addr)| StakingListItem { id, addr })
+            .collect()
+    }
+    pub fn print_nft_staking_pools(&self) -> Vec<StakingPoolItem> {
+        self.nft_staking_pools
+            .clone()
+            .into_iter()
+            .map(|(id, pool)| StakingPoolItem { id, pool })
+            .collect()
+    }
+    // todo: print nft
+    // todo: print pool
 
-    // common functions
+
+    // inner functions
     // check nft is in service
     fn is_in_service() -> (bool)
     {
         true
     }
 
-    // 
+    fn calcucate_benefit()
+    {
+
+    } 
 
     /* admin command */
 
@@ -136,6 +179,10 @@ impl StakingService {
 
     /* user command */
     // add one of nft into it's staking pool
+    pub fn add_nft_into_pool() -> ()
+    {
+        
+    }
 
     // withdraw one nft out of pool
 

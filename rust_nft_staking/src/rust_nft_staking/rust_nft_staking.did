@@ -1,3 +1,36 @@
+type Nft = record {
+    canister_id: text;
+
+    token_id: text;   
+    nri: nat32;
+
+    owner_id: text;
+
+    is_staking: bool;   
+    start_time: nat64;
+    end_time: nat64;
+    earned_profit: nat64;
+    staking_level: nat32;
+};
+
+type StakingPool = record {
+  canister_id : text;
+  service_id : nat32;
+
+  nfts : vec Nft;
+
+  benefit_pool : vec nat64;
+  temp_benefit : vec nat64;
+};
+
+type StakingListItem = record { 
+  id : nat32; 
+  addr : text };
+
+type StakingPoolItem = record { 
+  id : nat32; 
+  pool : StakingPool };
+
 service : {
 
   get_owner : () -> (opt principal) query;
@@ -6,4 +39,7 @@ service : {
   get_ic_cdk_caller : () -> (opt principal) query;
 
   add_staking : (text) -> ();
+
+  print_nft_staking_list : () -> (vec StakingListItem) query;
+  print_nft_staking_pools : () -> (vec StakingPoolItem) query;
 }
