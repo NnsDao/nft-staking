@@ -34,9 +34,10 @@ type StakingPoolItem = record {
 service : {
 
   get_owner : () -> (opt principal) query;
-  get_id : () -> (nat32) query;
+  get_something : () -> (nat32) query;
+  set_and_get_something : (text) -> (nat) query;
 
-  get_ic_cdk_caller : () -> (opt principal) query;
+  get_ic_cdk_caller : (text) -> (opt principal) query;
 
   add_staking : (text) -> ();
 

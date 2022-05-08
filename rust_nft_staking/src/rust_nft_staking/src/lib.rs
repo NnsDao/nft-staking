@@ -31,10 +31,16 @@ fn get_owner() -> Option<Principal> {
 
 #[query]
 #[candid::candid_method(query)]
-fn get_id() -> u32 {
+fn get_something() -> u32 {
     STAKING_STATE.with(|staking_service| 
-        staking_service.borrow().get_id()
+        staking_service.borrow().get_something()
     )
+}
+#[query]
+#[candid::candid_method(query)]
+pub async fn set_and_get_something(sth : String) -> u128 {
+    //error
+    get_ndp_weights(ic_cdk::caller()).await
 }
 
 // todo: auth error
@@ -49,9 +55,14 @@ fn add_staking(id : String) -> () {
 
 #[query]
 #[candid::candid_method(query)]
-fn get_ic_cdk_caller() -> Option<Principal>
+fn get_ic_cdk_caller(sth : String) -> Option<Principal>
 {
-    Some(ic_cdk::caller())
+    let id = Principal::from_text(sth);
+    match id{
+        Ok(id) => return Some(id),
+        Err(err) => return Some(ic_cdk::caller())
+    }
+    
 }
 
 // get the nft info of all NFTs
@@ -70,4 +81,29 @@ pub fn print_nft_staking_list() -> Vec<staking::StakingListItem> {
 pub fn print_nft_staking_pools() -> Vec<staking::StakingPoolItem> {
     STAKING_STATE.with(|staking_service| 
         staking_service.borrow().print_nft_staking_pools())
+}
+
+
+
+use ic_ledger_types::AccountIdentifier;
+use crate::canisters::{ canister::*};
+
+pub async fn get_ndp_weights(caller: Principal) -> u128 {
+        if let ext::BalanceResponse::ok(ndp_balance) = get_balance(caller).await {
+            return ndp_balance;
+        }
+        return 0
+}
+
+async fn get_balance(caller: Principal) -> ext::BalanceResponse {
+    let addr = AccountIdentifier::new(&caller, &ic_ledger_types::DEFAULT_SUBACCOUNT);
+    let arg = ext::BalanceRequest {
+        token: get_canister_id(CanisterEnmu::Ndp),
+        user: ext::User::address(addr.to_string()),
+    };
+    CanisterExtClient::new(get_canister_id(CanisterEnmu::Ndp))
+        .balance(arg)
+        .await
+        .unwrap()
+        .0
 }

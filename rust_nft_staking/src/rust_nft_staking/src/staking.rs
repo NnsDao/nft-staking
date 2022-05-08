@@ -36,7 +36,7 @@ pub struct Nft {
     pub start_time: u64,
     pub end_time: u64,
     pub earned_profit: u64,
-    pub staking_level: f32,
+    pub staking_level: u32,
 }
 
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
@@ -97,6 +97,8 @@ pub struct StakingService {
 
     // todo: staking record
 
+    // 
+    //pub whitelist: Vec<String>,
 }
 
 impl StakingService {
@@ -116,10 +118,11 @@ impl StakingService {
     }
 
     // print functions for debug
-    pub fn get_id(& self) -> (u32)
+    pub fn get_something(& self) -> (u32)
     {
         self.id
     }
+
     pub fn print_nft_staking_list(&self) -> Vec<StakingListItem> {
         self.nft_staking_list
             .clone()
@@ -134,9 +137,6 @@ impl StakingService {
             .map(|(id, pool)| StakingPoolItem { id, pool })
             .collect()
     }
-    // todo: print nft
-    // todo: print pool
-
 
     // inner functions
     // check nft is in service
@@ -148,7 +148,12 @@ impl StakingService {
     fn calcucate_benefit()
     {
 
-    } 
+    
+    }
+    
+
+
+
 
     /* admin command */
 
@@ -171,7 +176,13 @@ impl StakingService {
     }
 
     // add benefit into benefit pool
-
+    // which pool
+    // which token icp?
+    // temp -> total
+    pub fn add_benefit()
+    {
+        
+    }
     // add benefit into temp_benefit
 
     // temp_benefit -> benefit pool
@@ -190,3 +201,4 @@ impl StakingService {
 
 
 }
+
