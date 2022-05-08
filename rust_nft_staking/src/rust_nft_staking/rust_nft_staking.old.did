@@ -1,0 +1,27 @@
+type Time = int;
+type Result = 
+ variant {
+   err: text;
+   ok;
+ };
+type Operation = 
+ variant {
+   mint;
+   sale;
+ };
+type Log = 
+ record {
+   from: opt Address;
+   operation: Operation;
+   price: opt nat64;
+   time: Time;
+   to: Address;
+   token: text;
+ };
+type Address = text;
+service : {
+  add_owner: (principal) -> (bool);
+  get_owner: () -> (vec principal) query;
+  get_record_by_canister: (text) -> (vec Log) query;
+  "record": (text, Log) -> (Result);
+}

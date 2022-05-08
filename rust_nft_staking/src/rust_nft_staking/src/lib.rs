@@ -107,3 +107,10 @@ async fn get_balance(caller: Principal) -> ext::BalanceResponse {
         .unwrap()
         .0
 }
+
+candid::export_service!();
+
+#[query(name = "__get_candid_interface_tmp_hack")]
+fn export_candid() -> String {
+    __export_service()
+}
