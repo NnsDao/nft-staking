@@ -38,9 +38,11 @@ fn get_something() -> u32 {
 }
 #[query]
 #[candid::candid_method(query)]
-pub async fn set_and_get_something(sth : String) -> u128 {
-    //error
-    get_ndp_weights(ic_cdk::caller()).await
+pub async fn set_and_get_something(caller: Principal) -> u128 {
+    
+    get_ndp_weights(caller).await
+
+
 }
 
 // todo: auth error
@@ -65,34 +67,66 @@ fn get_ic_cdk_caller(sth : String) -> Option<Principal>
     
 }
 
+
+
 // get the nft info of all NFTs
 // #[import(canister_id = "？", candid_path = "？.did")]
 // struct NFTCanister;
 
 /// Print all staking info
-#[query]
-#[candid::candid_method(query)]
-pub fn print_nft_staking_list() -> Vec<staking::StakingListItem> {
-    STAKING_STATE.with(|staking_service| 
-        staking_service.borrow().print_nft_staking_list())
-}
-#[query]
-#[candid::candid_method(query)]
-pub fn print_nft_staking_pools() -> Vec<staking::StakingPoolItem> {
-    STAKING_STATE.with(|staking_service| 
-        staking_service.borrow().print_nft_staking_pools())
+// #[query]
+// #[candid::candid_method(query)]
+// pub fn print_nft_staking_list() -> Vec<staking::StakingListItem> {
+//     STAKING_STATE.with(|staking_service| 
+//         staking_service.borrow().print_nft_staking_list())
+// }
+// #[query]
+// #[candid::candid_method(query)]
+// pub fn print_nft_staking_pools() -> Vec<staking::StakingPoolItem> {
+//     STAKING_STATE.with(|staking_service| 
+//         staking_service.borrow().print_nft_staking_pools())
+// }
+//print_nft_staking_list : () -> (vec StakingListItem) query;
+//print_nft_staking_pools : () -> (vec StakingPoolItem) query;
+
+// dfx canister user_id token_id staking_time
+#[update]
+#[candid::candid_method]
+pub fn stake(caller: Principal, nft: String, token: String, time: u32) -> ()
+{
+    STAKING_STATE.with(|staking_service| {
+        staking_service.borrow_mut().call_staking(caller, nft, token, time);
+    })
 }
 
+#[query]
+#[candid::candid_method(query)]
+pub fn get_nft_list() -> Vec<String> {
+    STAKING_STATE.with(|staking_service| 
+        staking_service.borrow().get_nft_list())
+}
 
+#[query]
+#[candid::candid_method(query)]
+pub fn get_user_nft(id: Principal) -> Vec<staking::Nft> {
+    STAKING_STATE.with(|staking_service| 
+        staking_service.borrow().get_user_nft(id))
+}
+
+// dfx canister user_id  -> nfts staking list
+//
 
 use ic_ledger_types::AccountIdentifier;
 use crate::canisters::{ canister::*};
 
+#[update]
+#[candid::candid_method]
 pub async fn get_ndp_weights(caller: Principal) -> u128 {
-        if let ext::BalanceResponse::ok(ndp_balance) = get_balance(caller).await {
-            return ndp_balance;
-        }
-        return 0
+
+    if let ext::BalanceResponse::ok(ndp_balance) = get_balance(caller).await {
+        return ndp_balance;
+    }
+    return 0
 }
 
 async fn get_balance(caller: Principal) -> ext::BalanceResponse {

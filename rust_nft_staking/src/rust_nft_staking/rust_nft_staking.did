@@ -7,9 +7,12 @@ type Nft = record {
     owner_id: text;
 
     is_staking: bool;   
+
     start_time: nat64;
     end_time: nat64;
+
     earned_profit: nat64;
+
     staking_level: nat32;
 };
 
@@ -37,10 +40,15 @@ service : {
   get_something : () -> (nat32) query;
   set_and_get_something : (text) -> (nat) query;
 
+  get_ndp_weights : (opt principal) -> (nat);
+
   get_ic_cdk_caller : (text) -> (opt principal) query;
 
   add_staking : (text) -> ();
 
-  print_nft_staking_list : () -> (vec StakingListItem) query;
-  print_nft_staking_pools : () -> (vec StakingPoolItem) query;
+  stake : (opt principal, text, text, nat32) -> ();
+
+  get_nft_list : () -> (vec String) query;
+
+  get_user_nft : (opt principal) -> (vec Nft) query;
 }
