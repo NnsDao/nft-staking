@@ -298,27 +298,46 @@ impl StakingService {
                         let E : f64 = 2.718281828459;
                         let nri : f64 = nri.into();
                         
-                        let nri_weight = E.powf(nri / 10000.0) * 10000.0;
-                        let nri_weight: u128 = nri_weight as u128;
+                        let nri_weight = E.powf(nri / 10000.0);
 
-                        let nri : u32 = nri as u32;
-
-                        let mut ndp_weight : u128 = 10;
+                        let mut ndp_weight : f64 = 1.0;
                         if ndp_count > 100_000_000
                         {
-                            ndp_weight = 11;
+                            ndp_weight = 1.2;
+                        }
+                        if ndp_count > 100_000_000 * 50000
+                        {
+                            ndp_weight = 1.3;
+                        }
+                        if ndp_count > 100_000_000 * 100000
+                        {
+                            ndp_weight = 1.4;
+                        }
+                        if ndp_count > 100_000_000 * 200000
+                        {
+                            ndp_weight = 1.5;
+                        }
+                        if ndp_count > 100_000_000 * 300000
+                        {
+                            ndp_weight = 1.6;
                         }
 
                         let time_weight = match staking_time
                         {
-                            30 => 1300,
-                            90 => 1900,
-                            180 => 3250,
-                            360 => 6475,
-                            (_) => 1300,
+                            30 => 1.300,
+                            90 => 1.900,
+                            180 => 3.250,
+                            360 => 6.475,
+                            (_) => 1.300,
                         };
 
                         let weight = nri_weight * ndp_weight * time_weight;
+
+                        let weight:u128 = (weight * 1000.0) as u128;
+                        let ndp_weight: u128 = (ndp_weight * 1000.0) as u128;
+                        let nri:u32 = nri as u32;
+                        let nri_weight : u128 = (nri_weight * 1000.0) as u128;
+                        let time_weight : u128 = (time_weight * 1000.0) as u128;
 
                         // new a nft
                         let nft_instance = Nft{

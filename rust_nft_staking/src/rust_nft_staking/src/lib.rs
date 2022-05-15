@@ -102,7 +102,7 @@ pub async fn stake(caller: Principal, nft: String, token: String, time: u64) -> 
 {
     let ndp_weights = get_ndp_weights(caller).await;
     // todo : get nft nri from nft token id and its canister
-    let nri : u32 = 1000;
+    let nri : u32 = 10000;
 
     // todo : lock nft
 
