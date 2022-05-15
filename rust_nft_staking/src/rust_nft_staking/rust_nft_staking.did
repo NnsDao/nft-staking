@@ -11,9 +11,9 @@ type Nft = record {
     start_time: nat64;
     end_time: nat64;
 
-    earned_profit: nat64;
+    earned_profit: nat;
 
-    staking_level: nat32;
+    staking_level: nat64;
 };
 
 type StakingPool = record {
@@ -45,10 +45,18 @@ service : {
   get_ic_cdk_caller : (text) -> (opt principal) query;
 
   add_staking : (text) -> ();
+  add_user : (opt principal) -> ();
 
-  stake : (opt principal, text, text, nat32) -> ();
+  stake : (opt principal, text, text, nat64) -> ();
 
   get_nft_list : () -> (vec String) query;
 
   get_user_nft : (opt principal) -> (vec Nft) query;
+  get_user_bonus : (opt principal) -> (nat) query;
+
+  add_benefit_test : (text, text, nat) -> ();
+  calc_bonus : () -> ();
+
+  get_temp_benefit : (text, text, nat) -> (nat) query;
+  get_stable_benefit : (text, text, nat) -> (nat) query;
 }

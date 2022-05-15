@@ -21,29 +21,27 @@ thread_local! {
     static STAKING_STATE: RefCell<StakingService> = RefCell::default();
 }
 
-#[query]
-#[candid::candid_method(query)]
-fn get_owner() -> Option<Principal> {
-    STAKING_STATE.with(|staking_service| 
-        staking_service.borrow().get_owner()
-    )
-}
+// #[query]
+// #[candid::candid_method(query)]
+// fn get_owner() -> Option<Principal> {
+//     STAKING_STATE.with(|staking_service| 
+//         staking_service.borrow().get_owner()
+//     )
+// }
 
-#[query]
-#[candid::candid_method(query)]
-fn get_something() -> u32 {
-    STAKING_STATE.with(|staking_service| 
-        staking_service.borrow().get_something()
-    )
-}
-#[query]
-#[candid::candid_method(query)]
-pub async fn set_and_get_something(caller: Principal) -> u128 {
+// #[query]
+// #[candid::candid_method(query)]
+// fn get_something() -> u32 {
+//     STAKING_STATE.with(|staking_service| 
+//         staking_service.borrow().get_something()
+//     )
+// }
+// #[query]
+// #[candid::candid_method(query)]
+// pub async fn set_and_get_something(caller: Principal) -> u128 {
     
-    get_ndp_weights(caller).await
-
-
-}
+//     get_ndp_weights(caller).await
+// }
 
 // todo: auth error
 // #[update(guard = "is_owner")]
@@ -55,17 +53,25 @@ fn add_staking(id : String) -> () {
     })
 }
 
-#[query]
-#[candid::candid_method(query)]
-fn get_ic_cdk_caller(sth : String) -> Option<Principal>
-{
-    let id = Principal::from_text(sth);
-    match id{
-        Ok(id) => return Some(id),
-        Err(err) => return Some(ic_cdk::caller())
-    }
-    
+#[update]
+#[candid::candid_method]
+fn add_user(id : Principal) -> () {
+    STAKING_STATE.with(|staking_service| {
+        staking_service.borrow_mut().add_user(id.clone());
+    })
 }
+
+// #[query]
+// #[candid::candid_method(query)]
+// fn get_ic_cdk_caller(sth : String) -> Option<Principal>
+// {
+//     let id = Principal::from_text(sth);
+//     match id{
+//         Ok(id) => return Some(id),
+//         Err(err) => return Some(ic_cdk::caller())
+//     }
+    
+// }
 
 
 
@@ -92,13 +98,23 @@ fn get_ic_cdk_caller(sth : String) -> Option<Principal>
 // dfx canister user_id token_id staking_time
 #[update]
 #[candid::candid_method]
-pub fn stake(caller: Principal, nft: String, token: String, time: u32) -> ()
+pub async fn stake(caller: Principal, nft: String, token: String, time: u64) -> ()
 {
+    let ndp_weights = get_ndp_weights(caller).await;
+    // todo : get nft nri from nft token id and its canister
+    let nri : u32 = 1000;
+
+    // todo : lock nft
+
+    // todo : send nft
+
+    // if success         
     STAKING_STATE.with(|staking_service| {
-        staking_service.borrow_mut().call_staking(caller, nft, token, time);
+        staking_service.borrow_mut().call_staking(caller, nft, token, nri, ndp_weights, time);
     })
 }
 
+// get all nft type in service
 #[query]
 #[candid::candid_method(query)]
 pub fn get_nft_list() -> Vec<String> {
@@ -106,15 +122,19 @@ pub fn get_nft_list() -> Vec<String> {
         staking_service.borrow().get_nft_list())
 }
 
+// get all nft list in user staking
 #[query]
 #[candid::candid_method(query)]
 pub fn get_user_nft(id: Principal) -> Vec<staking::Nft> {
     STAKING_STATE.with(|staking_service| 
         staking_service.borrow().get_user_nft(id))
 }
-
-// dfx canister user_id  -> nfts staking list
-//
+#[query]
+#[candid::candid_method(query)]
+pub fn get_user_bonus(id: Principal) -> u128 {
+    STAKING_STATE.with(|staking_service| 
+        staking_service.borrow().get_user_bonus(id))
+}
 
 use ic_ledger_types::AccountIdentifier;
 use crate::canisters::{ canister::*};
@@ -127,6 +147,39 @@ pub async fn get_ndp_weights(caller: Principal) -> u128 {
         return ndp_balance;
     }
     return 0
+}
+
+#[update]
+#[candid::candid_method]
+pub async fn add_benefit_test(nft: String, token: String, volumn: u128) -> ()
+{
+    // if success         
+    STAKING_STATE.with(|staking_service| {
+        staking_service.borrow_mut().add_benefit_test(nft, token, volumn);
+    })
+}
+
+#[query]
+#[candid::candid_method(query)]
+pub fn get_temp_benefit(nft:String, token :String, volumn: u128) -> u128 {
+    STAKING_STATE.with(|staking_service| 
+        staking_service.borrow_mut().get_temp_benefit(nft, token, volumn))
+}
+#[query]
+#[candid::candid_method(query)]
+pub fn get_stable_benefit(nft:String, token :String, volumn: u128) -> u128 {
+    STAKING_STATE.with(|staking_service| 
+        staking_service.borrow_mut().get_stable_benefit(nft, token, volumn))
+}
+
+#[update]
+#[candid::candid_method]
+pub async fn calc_bonus() -> ()
+{
+    // if success         
+    STAKING_STATE.with(|staking_service| {
+        staking_service.borrow_mut().calc_benefit();
+    })
 }
 
 async fn get_balance(caller: Principal) -> ext::BalanceResponse {
