@@ -9,13 +9,18 @@ mod init;
 mod owner;
 use owner::is_owner;
 
-use std::cell::RefCell;
+use std::{cell::RefCell, borrow::Borrow};
 use std::vec::Vec;
 
-use canisters::{canister::*, ext};
+use canisters::{canister::*, ext::{self, balance}, dip20};
 
 use ic_cdk_macros::*;
-use ic_cdk::export::candid::Principal;
+use ic_cdk::{export::candid::Principal, println};
+
+use num_bigint::BigUint;
+use num_integer::Integer;
+
+use num_bigint::ToBigUint;
 
 thread_local! {
     static STAKING_STATE: RefCell<StakingService> = RefCell::default();
@@ -139,15 +144,35 @@ pub fn get_user_bonus(id: Principal) -> u128 {
 use ic_ledger_types::AccountIdentifier;
 use crate::canisters::{ canister::*};
 
+
+use ic_cdk::api::call::CallResult;
+
 #[update]
 #[candid::candid_method]
 pub async fn get_ndp_weights(caller: Principal) -> u128 {
 
-    if let ext::BalanceResponse::ok(ndp_balance) = get_balance(caller).await {
-        return ndp_balance;
-    }
-    return 0
+    // if let ext::BalanceResponse::ok(ndp_balance) = get_balance(caller).await {
+    //     return ndp_balance;
+    // }
+    let dip_client =
+            dip20::Service::new(Principal::from_text("vgqnj-miaaa-aaaal-qaapa-cai").unwrap());
+    let balance = dip_client.balanceOf(caller).await.unwrap();
+    // let balll = balance.0.clone();
+    // let ndp = match BigUint::from(balll).to_u64_digits().first()
+    // {
+    //     Some(balance) => balance,
+    //     None => &0
+    // };
+    
+    let ndp = candid::Nat(balance.0.to_biguint().unwarp());
+
+    let ndps = *ndp as u128;
+
+    ndps
+
 }
+
+
 
 #[update]
 #[candid::candid_method]

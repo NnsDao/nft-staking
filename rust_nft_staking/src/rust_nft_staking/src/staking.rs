@@ -14,29 +14,35 @@ use crate::init;
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
 pub struct Nft {
 
-    // nft type
+    // nft type, for example the Starfish canister id
     pub canister_id: String,
 
-    // nft info
+    // nft info, the exact nft addr the user hold and its nri
     pub token_id: String,      
     pub nri: u32,
 
+    // holder
     pub owner_id: Option<Principal>,
 
     // staking state
     pub is_staking: bool,   
-    
+    // staking time
     pub start_time: u64,
     pub end_time: u64,
 
+    // calc weights
     pub ndp_cache: u128,
-
     pub weight: u128,
+
+    // weights debug
     pub nri_weight: u128,
     pub ndp_weight: u128,
     pub time_weight: u128,
+
+    // this nft earned
     pub earned_profit: u128,
 
+    // staking time level, for example 30days
     pub staking_level: u64,
 }
 
@@ -50,10 +56,7 @@ pub struct User {
     pub nfts: Vec<Nft>, 
 
     // total bonus
-    pub bonus: u128,
-
-    // weights to calc bonus
-    pub bonus_weights: u128,
+    pub bonus: u128
 }
 
 impl User
@@ -63,8 +66,7 @@ impl User
         User
         {
             nfts : Vec::new(),
-            bonus : 0,
-            bonus_weights : 0,
+            bonus : 0
         }
     }
 }
@@ -72,7 +74,7 @@ impl User
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
 pub struct StakingPool {
 
-    // nft type
+    // nft type, for example The Starfish
     pub canister_id: String,
 
     // index in staking service
@@ -109,7 +111,10 @@ pub struct StakingBonus {
     pub stable_benefit: HashMap<String, u128>,
     pub temp_benefit: HashMap<String, u128>,
 
+    // all weights
     pub weights: u128,
+
+    // todo : apy
 }
 
 impl StakingBonus
@@ -247,11 +252,15 @@ impl StakingService {
             //canister_id: String::from("user name"),
             nfts: Vec::new(), 
             bonus: 0,
-            bonus_weights: 0,
+            //bonus_weights: 0,
         };
 
         self.user_list.insert(id, user_instance);
     }
+    // todo : user list
+    // pub fn get_user_list(&self) -> Vec<String> {
+
+    // }
     pub fn get_user_nft(&self, id: Principal) -> Vec<Nft>
     {
         let user = self.user_list.get(id.borrow()).unwrap();
@@ -393,7 +402,7 @@ impl StakingService {
 
                         let u = self.user_list.entry(caller).or_insert(User::init());
                         u.nfts.push(nft_instance.clone());
-                        u.bonus_weights += weight;
+                        //u.bonus_weights += weight;
                     }
                     None => ()
                 }
@@ -534,12 +543,14 @@ impl StakingService {
         }
     }
 
-    // calc bonus every day/hours
+    // calc bonus every day
     pub fn calc_benefit(&mut self)
     {
         for (key, value) in self.nft_staking_pools.clone() {
             // get all users info and his every nft benifit weights in this pool
             let bonus = self.nft_staking_bonus.entry(key.clone()).or_insert(StakingBonus::init());
+            
+            // todo: only nft is staking calc
             let weights  = bonus.weights;
 
             let ndp_token = String::from("vgqnj-miaaa-aaaal-qaapa-cai");
@@ -554,7 +565,8 @@ impl StakingService {
                 for nft in &mut user.nfts
                 {
                     nft.earned_profit += single_bonus * nft.weight;
-                    user.bonus += nft.earned_profit;
+                    //todo
+                    //user.bonus.get(ndp_token) += nft.earned_profit;
                 }
             }
 

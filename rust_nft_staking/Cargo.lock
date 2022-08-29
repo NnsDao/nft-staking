@@ -1655,6 +1655,8 @@ dependencies = [
  "ic-nns-constants",
  "ic-types 0.8.0",
  "ledger-canister",
+ "num-bigint",
+ "num-integer",
  "serde",
 ]
 

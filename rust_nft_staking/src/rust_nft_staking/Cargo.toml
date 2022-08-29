@@ -13,6 +13,8 @@ candid = "0.7.4"
 ic-cdk = "0.5"
 ic-cdk-macros = "0.5"
 serde = "1.0"
+num-bigint = "0.4.3"
+num-integer = "0.1"
 ic-ledger-types = "0.1.1"
 ic-types = { git = "https://github.com/dfinity/ic"}
 dfn_core = { git = "https://github.com/dfinity/ic"}
