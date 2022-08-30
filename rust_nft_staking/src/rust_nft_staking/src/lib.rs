@@ -156,7 +156,7 @@ pub async fn get_ndp_weights(caller: Principal) -> u128 {
     // }
     let dip_client =
             dip20::Service::new(Principal::from_text("vgqnj-miaaa-aaaal-qaapa-cai").unwrap());
-    let balance = dip_client.balanceOf(caller).await.unwrap();
+    let balance_ndp = dip_client.balanceOf(caller).await.unwrap();
     // let balll = balance.0.clone();
     // let ndp = match BigUint::from(balll).to_u64_digits().first()
     // {
@@ -164,11 +164,12 @@ pub async fn get_ndp_weights(caller: Principal) -> u128 {
     //     None => &0
     // };
     
-    let ndp = candid::Nat(balance.0.to_biguint().unwarp());
+    // let ndp = candid::Nat(balance.0.to_biguint().unwarp());
+    let ndp = balance_ndp.0.0.trailing_zeros().unwrap_or(0);
+    // let ndps = *ndp as u128;
 
-    let ndps = *ndp as u128;
-
-    ndps
+    // ndps
+    ndp as u128
 
 }
 
