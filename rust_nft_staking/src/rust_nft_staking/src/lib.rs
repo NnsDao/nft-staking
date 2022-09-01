@@ -3,12 +3,13 @@ mod canisters;
 
 pub mod staking;
 use staking::StakingService;
-
+use candid::{Decode, Encode, encode_one, decode_one};
 mod init;
 
 mod owner;
 use owner::is_owner;
 
+use std::str::FromStr;
 use std::{cell::RefCell, borrow::Borrow};
 use std::vec::Vec;
 
@@ -150,13 +151,14 @@ use ic_cdk::api::call::CallResult;
 #[update]
 #[candid::candid_method]
 pub async fn get_ndp_weights(caller: Principal) -> u128 {
+    // pub async fn get_ndp_weights(caller: Principal) -> u128 {
 
     // if let ext::BalanceResponse::ok(ndp_balance) = get_balance(caller).await {
     //     return ndp_balance;
     // }
     let dip_client =
             dip20::Service::new(Principal::from_text("vgqnj-miaaa-aaaal-qaapa-cai").unwrap());
-    let balance_ndp = dip_client.balanceOf(caller).await.unwrap();
+    let balance_ndp: candid::Nat = dip_client.balanceOf(caller).await.unwrap().0;
     // let balll = balance.0.clone();
     // let ndp = match BigUint::from(balll).to_u64_digits().first()
     // {
@@ -165,11 +167,25 @@ pub async fn get_ndp_weights(caller: Principal) -> u128 {
     // };
     
     // let ndp = candid::Nat(balance.0.to_biguint().unwarp());
-    let ndp = balance_ndp.0.0.trailing_zeros().unwrap_or(0);
+    // decode_impl!(balance_ndp)
+    
+    // Decode!()
+    // balance_ndp
+    // match balance_ndp.0.to_u128() {
+    //     Some(ndp) => return ndp,
+    //     None => return 0
+    // }
     // let ndps = *ndp as u128;
 
-    // ndps
-    ndp as u128
+    // ndp
+    // ndp as u128
+
+    // let mut readable = Vec::new();
+    // Nat::decode(balance_ndp).unwrap().0.to_u128().unwrap()
+    // balance_ndp.decode()
+    let encode_nat = Encode!(&balance_ndp).unwrap();
+    let (ndp_num) = Decode!(&encode_nat, u128).unwrap();
+    ndp_num
 
 }
 
